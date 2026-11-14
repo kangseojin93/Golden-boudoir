@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تاقیکردنەوەی زمانی کۆری — گۆڵدن بۆدوار</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Tahoma,"Noto Sans Arabic",Arial,sans-serif;
+  background:linear-gradient(180deg,#07101f,#0b1630,#102a55);
+  color:#fff;min-height:100vh;padding:18px
+}
+.container{max-width:850px;margin:auto}
+.logo{
+  text-align:center;padding:18px 10px 10px;font-size:28px;font-weight:900;
+  color:#fff;text-shadow:0 0 18px rgba(100,170,255,.45)
+}
+.logo small{display:block;font-size:12px;color:#a9c7ee;margin-top:6px}
+.card{
+  background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.12);
+  border-radius:24px;padding:22px;box-shadow:0 15px 45px rgba(0,0,0,.25);
+  backdrop-filter:blur(10px)
+}
+.hidden{display:none!important}
+h1{font-size:25px;margin-bottom:12px}
+h2{font-size:20px;margin-bottom:14px}
+p{line-height:1.9}
+input{
+  width:100%;padding:15px;border-radius:15px;border:1px solid #3b5b88;
+  background:#071224;color:#fff;font-size:17px;margin:12px 0
+}
+button{
+  border:0;border-radius:15px;padding:13px 20px;font-size:16px;font-weight:800;
+  cursor:pointer;background:#fff;color:#071224;margin-top:12px
+}
+button.secondary{background:#20385e;color:#fff}
+button:disabled{opacity:.45;cursor:not-allowed}
+.progress-wrap{margin:16px 0}
+.progress-top{display:flex;justify-content:space-between;font-size:13px;color:#b9cbea;margin-bottom:7px}
+.progress{height:10px;background:#162844;border-radius:20px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,#78b8ff,#fff);transition:.3s}
+.question-number{color:#8fc3ff;font-weight:800;margin-bottom:8px}
+.question{font-size:21px;line-height:1.9;margin-bottom:18px}
+.option{
+  display:block;width:100%;text-align:right;background:#0c1b34;color:#fff;
+  border:1px solid #29476f;padding:15px;border-radius:15px;margin:10px 0;
+  transition:.2s
+}
+.option.selected{border-color:#8fc3ff;background:#173963}
+.option.correct{border-color:#6ee7b7;background:#0e3a32}
+.option.wrong{border-color:#fb7185;background:#431c27}
+.tf-buttons{display:flex;gap:10px}
+.tf-buttons .option{text-align:center}
+.actions{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+.result-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:18px 0
+}
+.stat{background:#0b1a31;border:1px solid #29476f;border-radius:16px;padding:14px}
+.stat b{display:block;font-size:12px;color:#9bb9dd;margin-bottom:6px}
+.stat span{font-size:20px;font-weight:900}
+.level{
+  text-align:center;border-radius:20px;padding:20px;margin:15px 0;
+  background:linear-gradient(135deg,#183b68,#0c1c35);border:1px solid #4c79ae
+}
+.certificate{
+  margin-top:25px;background:#f8fbff;color:#081426;border-radius:24px;padding:28px;
+  border:8px double #18365c;text-align:center;box-shadow:0 20px 55px rgba(0,0,0,.35)
+}
+.cert-logo{font-size:24px;font-weight:900;color:#173d70;margin-bottom:8px}
+.cert-title{font-size:28px;font-weight:900;margin:8px 0 20px}
+.cert-name{font-size:26px;font-weight:900;margin:15px 0}
+.cert-line{height:1px;background:#9aacc4;margin:12px 0}
+.cert-note{font-size:15px;line-height:1.9;margin-top:18px}
+.creator{margin-top:20px;font-size:13px;line-height:1.8}
+@media(max-width:600px){
+ body{padding:10px}.card{padding:16px}.question{font-size:18px}
+ .result-grid{grid-template-columns:1fr 1fr}.certificate{padding:20px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">
+    گۆڵدن بۆدوار
+    <small>تاقیکردنەوەی ئاستی زمانی کۆری</small>
+  </div>
+
+  <section id="startScreen" class="card">
+    <h1>🇰🇷 تاقیکردنەوەی زمانی کۆری</h1>
+    <p>ئەم تاقیکردنەوەیە <b>١٣٠ پرسیار</b>ی هەیە. هەر وەڵامێکی ڕاست ١ نمرەیە.</p>
+    <p>ناوی کەسی تاقیکەرەوە لە خوارەوە بنووسە؛ ئەم ناوە لە ئەنجام و بڕوانامەکەدا دەردەکەوێت.</p>
+    <input id="studentName" type="text" placeholder="ناوی تۆ..." autocomplete="name">
+    <button onclick="startTest()">دەستپێکردنی تاقیکردنەوە 🚀</button>
+  </section>
+
+  <section id="testScreen" class="card hidden">
+    <div class="progress-wrap">
+      <div class="progress-top">
+        <span id="progressText">پرسیاری ١ لە ١٣٠</span>
+        <span id="scoreLive">نمرە: ٠</span>
+      </div>
+      <div class="progress"><div id="progressBar" class="progress-bar"></div></div>
+    </div>
+    <div id="questionBox"></div>
+    <div class="actions">
+      <button id="prevBtn" class="secondary" onclick="prevQuestion()">← پێشوو</button>
+      <button id="nextBtn" onclick="nextQuestion()">دواتر →</button>
+    </div>
+  </section>
+
+  <section id="resultScreen" class="card hidden">
+    <h1>🎉 ئەنجامی تاقیکردنەوە</h1>
+    <div class="result-grid">
+      <div class="stat"><b>ناو</b><span id="resultName">-</span></div>
+      <div class="stat"><b>ئاست</b><span id="resultLevel">-</span></div>
+      <div class="stat"><b>وەڵامی ڕاست</b><span id="correctCount">0</span></div>
+      <div class="stat"><b>وەڵامی هەڵە</b><span id="wrongCount">0</span></div>
+      <div class="stat"><b>نمرە</b><span id="finalScore">0 / 130</span></div>
+      <div class="stat"><b>ڕێژە</b><span id="percentage">0%</span></div>
+    </div>
+    <div id="levelBox" class="level"></div>
+    <button onclick="showCertificate()">پیشاندانی بڕوانامە 🏆</button>
+    <div id="certificate" class="certificate hidden">
+      <div class="cert-logo">✦ گۆڵدن بۆدوار ✦</div>
+      <div class="cert-title">بڕوانامەی تەواوکردنی تاقیکردنەوە</div>
+      <div>ئەم بڕوانامەیە دەدرێت بە</div>
+      <div id="certName" class="cert-name">-</div>
+      <div class="cert-line"></div>
+      <div><b>ئاست:</b> <span id="certLevel">-</span></div>
+      <div style="margin-top:8px"><b>وەڵامی ڕاست:</b> <span id="certCorrect">-</span></div>
+      <div style="margin-top:8px"><b>وەڵامی هەڵە:</b> <span id="certWrong">-</span></div>
+      <div style="margin-top:8px"><b>نمرە:</b> <span id="certScore">-</span></div>
+      <div class="cert-note">بەردەوام بە لە فێربوون؛ هەر هەنگاوێک نزیکترت دەکاتەوە لە ئامانجەکەت. 🌙🇰🇷</div>
+      <div class="creator">
+        <b>دروستکەر:</b><br>
+        لارا جاف — ناسراو بە سیۆجین<br>
+        خاوەنی گۆڵدن بۆدوار
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const questions = [{"type": "mc", "q": "\"안녕하세요\" مانای چییە؟", "opts": ["بای", "سڵاو", "سوپاس"], "a": 1}, {"type": "mc", "q": "جێناوی فەرمی بۆ \"من\" چییە؟", "opts": ["나", "너", "저"], "a": 2}, {"type": "mc", "q": "نیشاندەری بەرکار (Object Marker) چییە؟", "opts": ["이/가", "을/를", "은/는"], "a": 1}, {"type": "mc", "q": "\"물\" مانای چییە؟", "opts": ["ئاو", "نان", "شیر"], "a": 0}, {"type": "mc", "q": "ژمارە \"٣\" بە کۆری ڕەسەن چییە؟", "opts": ["하나", "둘", "셋"], "a": 2}, {"type": "mc", "q": "\"우유\" مانای چییە؟", "opts": ["ئاو", "شیر", "چا"], "a": 1}, {"type": "mc", "q": "پاشگری \"-고 싶다\" مانای چییە؟", "opts": ["دەمەوێت", "ناتوانم", "پێویستە"], "a": 0}, {"type": "mc", "q": "کاتی ڕابردووی کرداری \"가다\" (چوون) چییە؟", "opts": ["가요", "갔어요", "갈 거예요"], "a": 1}, {"type": "mc", "q": "\"오늘\" مانای چییە؟", "opts": ["دوێنێ", "ئەمڕۆ", "بەیانی"], "a": 1}, {"type": "mc", "q": "\"내일\" مانای چییە؟", "opts": ["دوێنێ", "ئەمڕۆ", "سبەی"], "a": 2}, {"type": "mc", "q": "پێچەوانەی \"있어요\" (هەیە) چییە؟", "opts": ["없어요", "안 돼요", "몰라요"], "a": 0}, {"type": "mc", "q": "\"학교\" مانای چییە؟", "opts": ["قوتابخانە", "ماڵ", "نەخۆشخانە"], "a": 0}, {"type": "mc", "q": "\"집\" مانای چییە؟", "opts": ["کتێبخانە", "ماڵ", "بازاڕ"], "a": 1}, {"type": "mc", "q": "\"선생님\" مانای چییە؟", "opts": ["قوتابی", "مامۆستا", "پزیشک"], "a": 1}, {"type": "mc", "q": "\"학생\" مانای چییە؟", "opts": ["مامۆستا", "قوتابی", "هاوڕێ"], "a": 1}, {"type": "mc", "q": "\"책\" مانای چییە؟", "opts": ["کتێب", "پێنووس", "دەفتەر"], "a": 0}, {"type": "mc", "q": "\"친구\" مانای چییە؟", "opts": ["دایک", "باوک", "هاوڕێ"], "a": 2}, {"type": "mc", "q": "\"얼마예요?\" مانای چییە؟", "opts": ["لەکوێیە؟", "نرخەکەی چەندە؟", "کاتژمێر چەندە؟"], "a": 1}, {"type": "mc", "q": "\"어디\" مانای چییە؟", "opts": ["کێ", "کوێ", "کاتێک"], "a": 1}, {"type": "mc", "q": "\"누구\" مانای چییە؟", "opts": ["کێ", "چی", "بۆچی"], "a": 0}, {"type": "mc", "q": "\"무엇 / 뭐\" مانای چییە؟", "opts": ["چۆن", "چی", "کوێ"], "a": 1}, {"type": "mc", "q": "\"왜\" مانای چییە؟", "opts": ["چی", "بۆچی", "کێ"], "a": 1}, {"type": "mc", "q": "ڕێزمانی \"-을 수 있다\" مانای چییە؟", "opts": ["دەتوانم", "ناتوانم", "نابێت"], "a": 0}, {"type": "mc", "q": "\"영화\" مانای چییە؟", "opts": ["مۆسیقا", "فیلم", "وێنە"], "a": 1}, {"type": "mc", "q": "\"음악\" مانای چییە؟", "opts": ["مۆسیقا", "وەرزش", "خواردن"], "a": 0}, {"type": "mc", "q": "\"비\" مانای چییە؟", "opts": ["بەفر", "باران", "با"], "a": 1}, {"type": "mc", "q": "\"눈\" جگە لە \"چاو\" مانای چی تری هەیە؟", "opts": ["بەفر", "باران", "خۆر"], "a": 0}, {"type": "mc", "q": "\"어제\" مانای چییە؟", "opts": ["دوێنێ", "ئەمڕۆ", "دووسبەی"], "a": 0}, {"type": "mc", "q": "\"지금\" مانای چییە؟", "opts": ["دوایی", "دوێنێ", "ئێستا"], "a": 2}, {"type": "mc", "q": "\"고기\" مانای چییە؟", "opts": ["سەوزە", "گۆشت", "میوە"], "a": 1}, {"type": "mc", "q": "\"사과\" مانای چییە؟", "opts": ["سێو", "مۆز", "کەلەم"], "a": 0}, {"type": "mc", "q": "\"바다\" مانای چییە؟", "opts": ["ڕووبار", "دەریا", "چیا"], "a": 1}, {"type": "mc", "q": "\"산\" مانای چییە؟", "opts": ["چیا/کێو", "دەریاچە", "دارستان"], "a": 0}, {"type": "mc", "q": "\"사진\" مانای چییە؟", "opts": ["وێنە", "فیلم", "رسام"], "a": 0}, {"type": "mc", "q": "\"돈\" مانای چییە؟", "opts": ["کات", "پارە", "کاڵا"], "a": 1}, {"type": "tf", "q": "هانگول لە ساڵی ١٤٤٣ دروستکرا.", "a": true}, {"type": "tf", "q": "ڕستەی کۆری بە بکەر دەست پێ دەکات و بە کردار کۆتایی دێت.", "a": true}, {"type": "tf", "q": "\"네\" مانای \"نەخێر\"ە.", "a": false}, {"type": "tf", "q": "\"아니요\" مانای \"بەڵێ\"یە.", "a": false}, {"type": "tf", "q": "\"저\" شێوازی فەرمیی \"من\"ە.", "a": true}, {"type": "tf", "q": "\"나\" شێوازی فەرمیی \"من\"ە.", "a": false}, {"type": "tf", "q": "\"감사합니다\" مانای \"داوای لێبوردن دەکەم\"ە.", "a": false}, {"type": "tf", "q": "\"죄송합니다\" مانای \"سوپاس\"ە.", "a": false}, {"type": "tf", "q": "ژمارەی چینی-کۆری بۆ ژماردنی تەمەن بەکاردێت.", "a": false}, {"type": "tf", "q": "ژمارەی چینی-کۆری بۆ پارە و خولەک بەکاردێت.", "a": true}, {"type": "tf", "q": "\"일, 이, 삼\" ژمارەی ڕەسەنی کۆرین.", "a": false}, {"type": "tf", "q": "\"하나, 둘, 셋\" ژمارەی ڕەسەنی کۆرین.", "a": true}, {"type": "tf", "q": "پاشگری \"에서\" بۆ شوێنی ئەنجامدانی کار بەکاردێت.", "a": true}, {"type": "tf", "q": "\"먹다\" مانای \"خوارنەوە\"یە.", "a": false}, {"type": "tf", "q": "\"마시다\" مانای \"خواردنەوە\"یە.", "a": true}, {"type": "tf", "q": "\"자다\" مانای \"خەوتن\"ە.", "a": true}, {"type": "tf", "q": "\"오다\" مانای \"چوون\"ە.", "a": false}, {"type": "tf", "q": "\"가다\" مانای \"چوون\"ە.", "a": true}, {"type": "tf", "q": "\"-지 않다\" بۆ نەرێکردنەوەی کردار بەکاردێت.", "a": true}, {"type": "tf", "q": "\"이것\" مانای \"ئەوەی ئەوێ\"یە.", "a": false}, {"type": "tf", "q": "\"저것\" بۆ شتێکی دوور لە قسەکەر و گوێگر بەکاردێت.", "a": true}, {"type": "tf", "q": "\"-지만\" مانای \"بەڵام\" دەدات.", "a": true}, {"type": "tf", "q": "\"-기 전에\" مانای \"دوای ئەوەی\" دەدات.", "a": false}, {"type": "tf", "q": "\"-(으)ㄴ 후에\" مانای \"دوای ئەوەی\" دەدات.", "a": true}, {"type": "tf", "q": "\"연세\" وشەی ڕێزدارە بۆ \"ناو\".", "a": false}, {"type": "tf", "q": "\"성함\" وشەی ڕێزدارە بۆ \"ناو\".", "a": true}, {"type": "tf", "q": "\"주무시다\" وشەی ڕێزدارە بۆ \"خەوتن\".", "a": true}, {"type": "tf", "q": "\"드시다\" وشەی ڕێزدارە بۆ \"خواردن/خواردنەوە\".", "a": true}, {"type": "tf", "q": "\"-아/어 보다\" مانای تاقیکردنەوە یان ئەزموون دەدات.", "a": true}, {"type": "tf", "q": "\"행복하다\" مانای \"خەمبار\"ە.", "a": false}, {"type": "tf", "q": "\"슬프다\" مانای \"خەمبار\"ە.", "a": true}, {"type": "tf", "q": "\"피곤하다\" مانای \"تێربوون\"ە.", "a": false}, {"type": "tf", "q": "\"눈이 높다\" ئیدیۆمێکە بۆ کەسێک پێوەرەکانی بەرز بێت.", "a": true}, {"type": "tf", "q": "\"귀가 얇다\" مانای گوێگرانە.", "a": false}, {"type": "tf", "q": "\"식은 죽 먹기\" مانای کارێکی زۆر سەختە.", "a": false}, {"type": "fill", "q": "مانای \"پێنووس\" بە کۆری؟", "answers": ["펜"]}, {"type": "fill", "q": "مانای \"موبایل\" بە کۆری؟", "answers": ["휴대폰", "스마트폰"]}, {"type": "fill", "q": "مانای \"دایک\" بە کۆری؟", "answers": ["어머니", "엄마"]}, {"type": "fill", "q": "مانای \"باوک\" بە کۆری؟", "answers": ["아버지", "아빠"]}, {"type": "fill", "q": "مانای \"کۆریا\" بە کۆری؟", "answers": ["한국"]}, {"type": "fill", "q": "مانای \"زمانی کۆری\"؟", "answers": ["한국어"]}, {"type": "fill", "q": "ژمارە \"١\" بە چینی-کۆری؟", "answers": ["일"]}, {"type": "fill", "q": "ژمارە \"٢\" بە چینی-کۆری؟", "answers": ["이"]}, {"type": "fill", "q": "ژمارە \"١\" بە ڕەسەن؟", "answers": ["하나"]}, {"type": "fill", "q": "ژمارە \"٢\" بە ڕەسەن؟", "answers": ["둘"]}, {"type": "fill", "q": "مانای \"بەڵێ\" بە کۆری فەرمی؟", "answers": ["네", "예"]}, {"type": "fill", "q": "مانای \"نەخێر\" بە کۆری فەرمی؟", "answers": ["아니요"]}, {"type": "fill", "q": "مانای کرداری \"خوێندنەوە\" (To read)؟", "answers": ["읽다"]}, {"type": "fill", "q": "مانای کرداری \"نووسین\" (To write)؟", "answers": ["쓰다"]}, {"type": "fill", "q": "مانای کرداری \"گوێگرتن\" (To listen)؟", "answers": ["듣다"]}, {"type": "fill", "q": "مانای کرداری \"سەیرکردن\" (To watch)؟", "answers": ["보다"]}, {"type": "fill", "q": "ڕێزمانی \"چونکە\" (لە ئاستی سەرەتایی)؟", "answers": ["-아/어서", "아/어서"]}, {"type": "fill", "q": "نیشاندەری \"لەگەڵ\" یان \"و\"؟", "answers": ["과/와", "하고"]}, {"type": "fill", "q": "مانای \"کاتژمێر\" (سەعات)؟", "answers": ["시"]}, {"type": "fill", "q": "مانای \"خولەک\"؟", "answers": ["분"]}, {"type": "fill", "q": "مانای \"خۆشویستن\" (To love)؟", "answers": ["사랑하다"]}, {"type": "fill", "q": "مانای \"بەدڵبوون\" (To like)؟", "answers": ["좋아하다"]}, {"type": "fill", "q": "مانای \"ڕقبوونەوە\" (To hate)؟", "answers": ["싫어하다"]}, {"type": "fill", "q": "مانای \"باشە/خۆشە\" (Good)؟", "answers": ["좋다"]}, {"type": "fill", "q": "مانای \"گەورە\" (Big)؟", "answers": ["크다"]}, {"type": "fill", "q": "مانای \"بچووک\" (Small)؟", "answers": ["작다"]}, {"type": "fill", "q": "مانای \"زۆر\" (Many/Much)؟", "answers": ["많다"]}, {"type": "fill", "q": "مانای \"کەم\" (Little/Few)؟", "answers": ["적다"]}, {"type": "fill", "q": "مانای \"گۆشت\"؟", "answers": ["고기"]}, {"type": "fill", "q": "مانای \"سڵاو\" لە وەڵامی تەلەفۆندا؟", "answers": ["여보세요"]}, {"type": "mc", "q": "وەرگێڕانی ڕستەی \"저는 한국어를 공부해요\" چییە؟", "opts": ["من کۆری دەخوێنم", "من دەچم بۆ کۆریا", "من کۆریم بەدڵە"], "a": 0}, {"type": "mc", "q": "ڕستەی \"지금 어디에 가요?\" مانای چییە؟", "opts": ["ئێستا چی دەخۆیت؟", "ئێستا بۆ کوێ دەچیت؟", "کەی دەگەڕێیتەوە؟"], "a": 1}, {"type": "mc", "q": "ڕستەی \"내일 친구를 만날 거예요\" ئاماژەیە بۆ چ کاتێک؟", "opts": ["ڕابردوو", "ئێستا", "داهاتوو"], "a": 2}, {"type": "mc", "q": "کامیان وەرگێڕانی دروستی \"تکایە ئاوەکە بیهێنە\"یە؟", "opts": ["물을 주세요", "물을 마셔요", "물이 있어요"], "a": 0}, {"type": "mc", "q": "ڕستەی \"김치가 매워요\" مانای چییە؟", "opts": ["کیمچی توندە", "کیمچی خۆشە", "کیمچی سوورە"], "a": 0}, {"type": "mc", "q": "وەرگێڕانی \"تەقسەکە زۆر ساردە\" بە کۆری چییە؟", "opts": ["날씨가 아주 추워요", "날씨가 아주 더워요", "날씨가 좋아요"], "a": 0}, {"type": "mc", "q": "ڕستەی \"저는 주말에 쉬어요\" مانای چییە؟", "opts": ["من لە کۆتایی هەفتەدا کار دەکەم", "من لە کۆتایی هەفتەدا پشوو دەدەم", "من لە کۆتایی هەفتەدا دەخوێنم"], "a": 1}, {"type": "mc", "q": "ڕستەی \"영화를 보고 싶어요\" مانای چییە؟", "opts": ["دەمەوێت سەیری فیلم بکەم", "سەیری فیلم دەکەم", "سەیری فیلمم کرد"], "a": 0}, {"type": "mc", "q": "ڕستەی \"한국 음식을 좋아해요\" مانای چییە؟", "opts": ["خواردنی کۆری لەدڵم دەبێت/حەزم لێیە", "خواردنی کۆری لێ دەنێم", "خواردنی کۆری دەکڕم"], "a": 0}, {"type": "mc", "q": "وەرگێڕانی \"لە ماڵەوە نان دەخۆم\" چییە؟", "opts": ["집에서 밥을 먹어요", "집에 가요", "집이 커요"], "a": 0}, {"type": "tf", "q": "ڕستەی \"어제 버스를 탔어요\" واتا \"دوێنێ سوار پاس بووم\".", "a": true}, {"type": "tf", "q": "ڕستەی \"내일은 비가 올 거예요\" واتە \"دوێنێ باران باری\".", "a": false}, {"type": "tf", "q": "ڕستەی \"한국어는 어렵지만 재미있어요\" واتە \"کۆری قورسە بەڵام خۆشە\".", "a": true}, {"type": "tf", "q": "ڕستەی \"도서관에서 책을 읽어요\" واتە \"لە ماڵەوە کتێب دەخوێنمەوە\".", "a": false}, {"type": "tf", "q": "ڕستەی \"지금 시간이 있어요?\" واتە \"ئێستا کاتت هەیە؟\".", "a": true}, {"type": "tf", "q": "ڕستەی \"이 옷은 너무 비싸요\" واتە \"ئەم جلە زۆر هەرزانە\".", "a": false}, {"type": "tf", "q": "ڕستەی \"배가 고파서 밥을 먹어요\" واتە \"چونکە برسیومە نان دەخۆم\".", "a": true}, {"type": "tf", "q": "ڕستەی \"손을 씻으세요\" واتە \"دەستەکانت بشۆ\".", "a": true}, {"type": "tf", "q": "ڕستەی \"가방이 가벼워요\" واتە \"جانتاکە زۆر قورسە\".", "a": false}, {"type": "tf", "q": "ڕستەی \"열심히 공부하세요\" واتە \"بە جدی بخوێنە/بەردەوام بە\".", "a": true}, {"type": "fill", "q": "وەرگێڕانی ڕستەی \"ناوی تۆ چییە؟\" بە کۆری بەشێوازی فەرمی؟", "answers": ["이름이 무엇이에요?", "성함이 어떻게 되세요?"]}, {"type": "fill", "q": "وەرگێڕانی ڕستەی \"من خەڵکی کوردستانم\"؟", "answers": ["저는 쿠르드스탄 사람이에요", "저는 쿠ردستان 사람이에요"]}, {"type": "fill", "q": "وەرگێڕانی ڕستەی \"خۆشحالم بە ناسینت\" بە کۆری؟", "answers": ["만나서 반가워요"]}, {"type": "fill", "q": "وەرگێڕانی ڕستەی \"ببخشە، تەنواڵێتەکە لەکوێیە؟\"؟", "answers": ["화장실이 어디예요?"]}, {"type": "fill", "q": "وەرگێڕانی ڕستەی \"ئەمە چەندە؟\"؟", "answers": ["이거 얼마예요?"]}, {"type": "fill", "q": "وەرگێڕانی ڕستەی \"دەمەوێت بچمە ماڵەوە\"؟", "answers": ["집에 가고 싶어요"]}, {"type": "fill", "q": "وەرگێڕانی ڕستەی \"ئێستا کاتژمێر چەندە؟\"؟", "answers": ["지금 몇 시예요?"]}, {"type": "fill", "q": "وەرگێڕانی ڕستەی \"یارمەتیم بدە تکایە\"؟", "answers": ["도와주세요"]}, {"type": "fill", "q": "وەرگێڕانی ڕستەی \"تێناگەم / نازانم\"؟", "answers": ["잘 모르겠어요", "이해가 안 돼요"]}, {"type": "fill", "q": "وەرگێڕانی ڕستەی \"دواتر دەتبینمەوە\"؟", "answers": ["나중에 봐요"]}];
+
+let currentQuestion = 0;
+let answers = [];
+let studentName = "";
+
+function startTest(){
+  const input = document.getElementById("studentName");
+  studentName = input.value.trim();
+
+  if(!studentName){
+    alert("تکایە ناوت بنووسە.");
+    input.focus();
+    return;
+  }
+
+  currentQuestion = 0;
+  answers = new Array(questions.length).fill(null);
+
+  document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("resultScreen").classList.add("hidden");
+  document.getElementById("testScreen").classList.remove("hidden");
+
+  renderQuestion();
+}
+
+function normalizeText(text){
+  return String(text || "")
+    .trim()
+    .replace(/[؟?!.,،؛:]/g,"")
+    .replace(/\s+/g," ")
+    .toLowerCase();
+}
+
+function isCorrect(index){
+  const item = questions[index];
+  const user = answers[index];
+
+  if(item.type === "mc"){
+    return user === item.a;
+  }
+
+  if(item.type === "tf"){
+    return user === item.a;
+  }
+
+  if(item.type === "fill"){
+    const u = normalizeText(user);
+    return item.answers.some(a => normalizeText(a) === u);
+  }
+
+  return false;
+}
+
+function renderQuestion(){
+  const item = questions[currentQuestion];
+  const box = document.getElementById("questionBox");
+
+  document.getElementById("progressText").textContent =
+    `پرسیاری ${currentQuestion + 1} لە ${questions.length}`;
+
+  document.getElementById("progressBar").style.width =
+    `${((currentQuestion + 1) / questions.length) * 100}%`;
+
+  document.getElementById("scoreLive").textContent =
+    `نمرە: ${answers.filter((_,i)=>isCorrect(i)).length}`;
+
+  let html = `
+    <div class="question-number">پرسیار ${currentQuestion + 1}</div>
+    <div class="question">${item.q}</div>
+  `;
+
+  if(item.type === "mc"){
+    item.opts.forEach((opt,i)=>{
+      const selected = answers[currentQuestion] === i ? "selected" : "";
+      html += `<button class="option ${selected}" onclick="selectAnswer(${i})">${String.fromCharCode(1571+i)}) ${opt}</button>`;
+    });
+  }
+
+  if(item.type === "tf"){
+    const o = answers[currentQuestion] === true ? "selected" : "";
+    const x = answers[currentQuestion] === false ? "selected" : "";
+    html += `
+      <div class="tf-buttons">
+        <button class="option ${o}" onclick="selectAnswer(true)">⭕ ڕاست (O)</button>
+        <button class="option ${x}" onclick="selectAnswer(false)">❌ هەڵە (X)</button>
+      </div>`;
+  }
+
+  if(item.type === "fill"){
+    html += `
+      <input id="fillAnswer" type="text" placeholder="وەڵامەکەت لێرە بنووسە..."
+      value="${answers[currentQuestion] ?? ""}"
+      oninput="answers[currentQuestion]=this.value">`;
+  }
+
+  box.innerHTML = html;
+
+  document.getElementById("prevBtn").disabled = currentQuestion === 0;
+  document.getElementById("nextBtn").textContent =
+    currentQuestion === questions.length - 1 ? "تەواوکردن 🏆" : "دواتر →";
+}
+
+function selectAnswer(value){
+  answers[currentQuestion] = value;
+  renderQuestion();
+}
+
+function nextQuestion(){
+  if(currentQuestion === questions.length - 1){
+    finishTest();
+    return;
+  }
+
+  currentQuestion++;
+  renderQuestion();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function prevQuestion(){
+  if(currentQuestion === 0) return;
+  currentQuestion--;
+  renderQuestion();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function getLevel(score){
+  if(score >= 105) return {
+    name:"نایاب ⭐",
+    text:"ئاستەکەت زۆر باشە! بەردەوام بە و ئاستی خۆت بەرزتر بکە."
+  };
+  if(score >= 79) return {
+    name:"پێشکەوتوو 🌷",
+    text:"ئاستەکەت باش و پێشکەوتووە."
+  };
+  if(score >= 53) return {
+    name:"مامناوەند 🌿",
+    text:"بنەماکانت باشن؛ بە ڕاهێنان دەتوانیت پێشکەوتووتر بیت."
+  };
+  if(score >= 27) return {
+    name:"سەرەتایی 🌱",
+    text:"بنەمایەکی باش هەیە؛ بەردەوام بە لە فێربوون."
+  };
+  return {
+    name:"پێویستی بە ڕاهێنانی زیاترە 📚",
+    text:"پێویستە زیاتر ڕاهێنان بکەیت و وانە سەرەتاییەکان دووبارە بکەیتەوە."
+  };
+}
+
+function finishTest(){
+  const score = answers.filter((_,i)=>isCorrect(i)).length;
+  const wrong = questions.length - score;
+  const percentage = Math.round((score / questions.length) * 100);
+  const level = getLevel(score);
+
+  document.getElementById("testScreen").classList.add("hidden");
+  document.getElementById("resultScreen").classList.remove("hidden");
+
+  document.getElementById("resultName").textContent = studentName;
+  document.getElementById("resultLevel").textContent = level.name;
+  document.getElementById("correctCount").textContent = score;
+  document.getElementById("wrongCount").textContent = wrong;
+  document.getElementById("finalScore").textContent = `${score} / ${questions.length}`;
+  document.getElementById("percentage").textContent = `${percentage}%`;
+  document.getElementById("levelBox").innerHTML =
+    `<h2>${level.name}</h2><p>${level.text}</p>`;
+
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function showCertificate(){
+  const score = answers.filter((_,i)=>isCorrect(i)).length;
+  const wrong = questions.length - score;
+  const level = getLevel(score);
+
+  document.getElementById("certificate").classList.remove("hidden");
+  document.getElementById("certName").textContent = studentName;
+  document.getElementById("certLevel").textContent = level.name;
+  document.getElementById("certCorrect").textContent = score;
+  document.getElementById("certWrong").textContent = wrong;
+  document.getElementById("certScore").textContent = `${score} / ${questions.length}`;
+}
+</script>
+</body>
+</html>
