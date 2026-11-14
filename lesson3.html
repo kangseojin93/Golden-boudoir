@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ku">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>زمانی کۆری - Golden Boudoir</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body data-lesson="3">
+
+<header class="lessonHeader">
+
+    <a href="korean.html" class="backBtn">⬅ گەڕانەوە</a>
+
+    <div class="lessonTop">
+        <img src="logo.png" class="profileLogo">
+        <span>kangseojin93</span>
+    </div>
+
+</header>
+
+<section class="lessonHero">
+
+    <h1>وانەی سێیەم</h1>
+
+    <h2>خۆناساندن</h2>
+
+   
+    <p>خۆناساندن</p>
+
+</section>
+
+<section class="lessonProgress">
+
+    <div class="progressTop">
+
+        <span>پێشکەوتنی وانە</span>
+
+        <span id="lessonPercent">0%</span>
+
+    </div>
+
+    <div class="progressBar">
+
+        <div id="lessonFill" class="progressFill"></div>
+
+    </div>
+
+</section>
+
+<div class="lessonSlides">
+
+<img src="lesson3-1.jpg" class="slide active">
+
+<img src="lesson3-2.jpg" class="slide">
+
+
+</div>
+
+<div class="lessonButtons">
+
+    <button id="nextBtn" onclick="nextSlide()">
+        ▶ بەشی دواتر
+    </button>
+
+    <button id="finishBtn" onclick="finishLesson()" style="display:none;">
+        ✅ تەواوکردنی وانە
+    </button>
+
+</div>
+
+<script src="lesson.js"></script>
+
+</body>
+
+</html>
